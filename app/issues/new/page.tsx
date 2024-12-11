@@ -30,10 +30,23 @@ type IssueForm = z.infer<typeof createIssueSchema>;
 
 const NewIssuePage = () => {
   const {register, control, handleSubmit, formState: { errors}} = useForm<IssueForm>({ resolver: zodResolver(createIssueSchema)});
-  // console.log(register('title'));
+
   const router = useRouter();
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onSubmit = handleSubmit( async (data) => {
+    try {
+        setIsSubmitting(true)
+        await axios.post('/api/issues', data);
+        router.push('/issues')  /// send user to issues page
+    
+    } catch (error) {
+      setIsSubmitting(false)
+      console.log(error)
+      setError('Error occurred.')
+    }
+  });
 
 
   return (
@@ -50,19 +63,7 @@ const NewIssuePage = () => {
 }
    
 
-    <form className='max-w-xl space-y-3' 
-    onSubmit={handleSubmit( async (data) => {
-      try {
-          setIsSubmitting(true)
-        await axios.post('/api/issues', data);
-        router.push('/issues')  /// send user to issues page
-      
-      } catch (error) {
-        setIsSubmitting(false)
-        console.log(error)
-        setError('Error occurred.')
-      }
-    }) }>
+    <form className='max-w-xl space-y-3' onSubmit={onSubmit}>
 
         <TextField.Root placeholder="Title" {...register('title')} />
         {/* {errors.title && (<Text color="red" as="p">{errors.title.message}</Text>)}  instead of this =>> ErrorMessage*/}
