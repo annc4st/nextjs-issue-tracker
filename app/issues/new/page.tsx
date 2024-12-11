@@ -1,6 +1,6 @@
 'use client';
 
-import { TextField, TextInput, TextArea, Button, Callout } from '@radix-ui/themes'
+import { TextField, TextInput, TextArea, Button, Callout, Text} from '@radix-ui/themes'
 import {InfoCircledIcon }  from  '@radix-ui/react-icons';
 import dynamic from 'next/dynamic';
  
@@ -13,14 +13,21 @@ import axios from 'axios'
 import {useForm, Controller} from 'react-hook-form'
 import { useReducer, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createIssueSchema } from '@/app/validationSchema';
+import {z} from 'zod';
 
- interface IssueForm {
-  title: string;
-  description: string;
- }
+//  interface IssueForm {
+//   title: string;
+//   description: string;
+//  }
+
+//generate interface based on schema createIssueSchema like above interface
+type IssueForm = z.infer<typeof createIssueSchema>;
+
 
 const NewIssuePage = () => {
-  const {register, control, handleSubmit} = useForm<IssueForm>();
+  const {register, control, handleSubmit, formState: { errors}} = useForm<IssueForm>({ resolver: zodResolver(createIssueSchema)});
   // console.log(register('title'));
   const router = useRouter();
   const [error, setError] = useState('');
@@ -54,11 +61,13 @@ const NewIssuePage = () => {
     }) }>
 
         <TextField.Root placeholder="Title" {...register('title')} />
+        {errors.title && <Text color="red" as="p">{errors.title.message}</Text>}
    
 
       <Controller name="description" 
       control={control} 
       render = {({field }) => <SimpleMDE placeholder="Description of an issue" {...field} /> } />
+      {errors.description && <Text color="red" as="p">{errors.description.message}</Text>}
        
       <Button>Submit</Button>
     </form>
