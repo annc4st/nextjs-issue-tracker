@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createIssueSchema } from '@/app/validationSchema';
 import {z} from 'zod';
 import ErrorMessage from '@/app/components/ErrorMessage';
+import Spinner from '@/app/components/Spinner';
 
 //  interface IssueForm {
 //   title: string;
@@ -32,6 +33,7 @@ const NewIssuePage = () => {
   // console.log(register('title'));
   const router = useRouter();
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   return (
@@ -51,11 +53,12 @@ const NewIssuePage = () => {
     <form className='max-w-xl space-y-3' 
     onSubmit={handleSubmit( async (data) => {
       try {
-       
+          setIsSubmitting(true)
         await axios.post('/api/issues', data);
         router.push('/issues')  /// send user to issues page
       
       } catch (error) {
+        setIsSubmitting(false)
         console.log(error)
         setError('Error occurred.')
       }
@@ -71,7 +74,8 @@ const NewIssuePage = () => {
       render = {({field }) => <SimpleMDE placeholder="Description of an issue" {...field} /> } />
       {errors.description && (<Text color="red" as="p">{errors.description.message}</Text>)}
        
-      <Button>Submit</Button>
+      <Button disabled={isSubmitting}>Submit{isSubmitting && <Spinner />}</Button>
+  
     </form>
     </div>
   )
