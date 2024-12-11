@@ -1,6 +1,6 @@
 'use client';
 
-import { TextField, TextInput, TextArea, Button, Callout, Text} from '@radix-ui/themes'
+import { TextField, TextArea, Button, Callout, Text} from '@radix-ui/themes'
 import {InfoCircledIcon }  from  '@radix-ui/react-icons';
 import dynamic from 'next/dynamic';
  
